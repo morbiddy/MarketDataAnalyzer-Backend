@@ -1,0 +1,47 @@
+[
+    { 
+        "name": "emaCross",
+        "indicators": 
+        [
+            {
+                "name": "ema",
+                "param": 10
+            },
+            {
+                "name": "ema",
+                "param": 20
+            }
+        ],
+        "description": "Buy when price cross above"
+    },
+    { 
+        "name": "bbBreakout",
+        "indicators":[
+            { 
+                "name": "bollingerbands",
+                "params": {
+                    "p1": 0,
+                    "p2": 0
+                }
+            }
+        ],
+        "description": "Buy when ..."
+    },
+    {
+        "name": "stochSwing",
+        "indicators": [
+            {
+                "name": "stochasticRSI",
+                "params": {
+                    "p1": 0,
+                    "p2": 0
+                }
+            },
+            {
+                "name": "ema",
+                "params": 200
+            }
+        ],
+        "description": "Buy when ..."
+    }
+]

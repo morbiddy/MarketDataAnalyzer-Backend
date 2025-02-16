@@ -1,0 +1,19 @@
+
+
+Filter csv files from folder
+
+Write json files as markets
+
+Scan all markets
+    Each market
+        - sum of signals
+        - calc profit
+        - write report to file
+
+Write report
+    - scan reports
+    - sort strategy
+    - indicators    
+    - rank profit
+
+
