@@ -1,14 +1,14 @@
-"use strict";
-
-const { setupMarketdata } = require('./db-create-database.js');
-const { processIndicators } = require('./db-process-indicators.js');
-const { processSignals } = require('./db-process-signals.js');
-const { combineSignals } = require('./db-combine-signals.js');
+const { getUserPreferences, setUserPreferences } = require("./services/userPreferencesService");
+const { chartData, documents, documentsByMonth } = require("./services/marketDataService");
+const { collectionsInfo, countDocumentsInAllCollections, listDatabases } = require("./services/databaseService");
 
 module.exports = {
-    setupMarketdata,
-    processIndicators,
-    processSignals,
-    combineSignals,
-    query: require('./db-query.js')          // export functions of db-query.js as parameter of query  => use as db.query.chartData etc...
+  getUserPreferences,
+  setUserPreferences,
+  chartData,
+  documents,
+  documentsByMonth,
+  collectionsInfo,
+  countDocumentsInAllCollections,
+  listDatabases  
 };

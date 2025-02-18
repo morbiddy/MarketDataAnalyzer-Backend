@@ -1,7 +1,7 @@
 "use strict";
 
 const { MongoClient } = require('mongodb');
-const { URI } = require('./constants');
+const { URI } = require('../constants');
 const { interval } = require('date-fns');
 
 /**

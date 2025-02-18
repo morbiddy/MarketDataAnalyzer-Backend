@@ -9,7 +9,7 @@ const http = require('http');
 const fs = require('fs').promises;
 const { body, query, validationResult } = require('express-validator');
 
-const db = require('./db');
+const db = require('./db/index');
 
 const app = express();
 
