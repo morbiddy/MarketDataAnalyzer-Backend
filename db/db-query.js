@@ -1,5 +1,5 @@
 const { getUserPreferences, setUserPreferences } = require("./services/userPreferencesService");
-const { processIndicators, chartData, documents, documentsByMonth } = require("./services/marketDataService");
+const { chartData, documents, documentsByMonth } = require("./services/marketDataService");
 const { collectionsInfo, countDocumentsInAllCollections, listDatabases } = require("./services/databaseService");
 
 module.exports = {
@@ -10,6 +10,5 @@ module.exports = {
   documentsByMonth,
   collectionsInfo,
   countDocumentsInAllCollections,
-  listDatabases,
-  processIndicators
+  listDatabases  
 };
