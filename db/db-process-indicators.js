@@ -12,7 +12,7 @@ async function processIndicators(dbName) {
     const client = new MongoClient(URI);
     try {
         await client.connect();
-        console.log("Process indicators ....");
+        console.log(`Processing indicators for ${dbName}...`);
 
         const db = client.db(dbName);
 
@@ -50,6 +50,7 @@ async function processIndicators(dbName) {
             // Store indicators in MongoDB
             await collection.insertMany(indicators);
         }
+        console.log("Indicators processing complete.");
 
     } catch (err) {
         console.error("An error occurred:", err);
