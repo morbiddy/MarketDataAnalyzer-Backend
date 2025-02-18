@@ -213,7 +213,7 @@ app.get('/collections/info', [
 // Global error handler middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    req.status(500).json({ error: 'Internal Server Error', details: err.message });
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
 });
 
 /**

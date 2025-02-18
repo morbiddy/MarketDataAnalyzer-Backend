@@ -1,3 +1,5 @@
+const db = require("../config/database");
+
 const MarketData = require("../models/MarketData");
 const { getUserPreferences } = require("./userPreferencesService");
 
@@ -23,56 +25,34 @@ async function chartData(user) {
     }
 }
 
-async function documents(user, collection) {
-    const client = new MongoClient(URI);
-
+async function documents(user, collectionName) {
     // Change the global time zone to UTC
     process.env.TZ = 'UTC';
 
     try {
-
         const prefs = await getUserPreferences(user);
-        const dbName = prefs.market + '_' + prefs.interval;
+        const dbName = `${prefs.market}_${prefs.interval}`;
 
-        await client.connect();
-
-        const adminDB = client.db().admin();
-        const { databases } = await adminDB.listDatabases();
-
-        const dbExists = databases.some(db => db.name === dbName);
-
-        if(!dbExists){
-            console.log(`Database ${dbName} does not exist.`);
-            await client.close();
-            // Revert to the system's default time zone
-            delete process.env.TZ;
-            return { name: dbName, exist: false};
-        }
-
-        const database = client.db(dbName);        
+        // Use the existing Mongoose connection to switch database context
+        const database = mongoose.connection.useDb(dbName);
+        const collection = database.collection(collectionName);
         
         // Query for documents starting from the given date
-        const query = { timestamp: { $gte: new Date(prefs.from), $lt: new Date(prefs.to) } };
+        const query = { timestamp: { $gte: prefs.from, $lt: prefs.to } };
         const options = { sort: { timestamp: 1 } };
 
-        const cursor = database.collection(collection).find(query, options);
-
-        const documents = [];
-        for await (const doc of cursor) {
-            documents.push(doc);
-        }
-        console.log('return ' + documents.length + ' documents from ' + collection);
-        return documents;
+        const data = await collection.find(query, options).toArray();
+        
+        console.log(`Returned ${data.length} documents from ${collectionName}`);
+        return data;
 
     } catch (error) {
-        console.error(error);
-        return 0; //res.status(500).send('Error querying the database');
-    } finally {
-        await client.close();
+        console.error("Error in documents:", error);
+        throw error;
     }
 }
 
-async function documentsByMonth(dbName, collection, year, month) {
+async function documentsByMonth(dbName, collectionName, year, month) {
     const client = new MongoClient(URI);
 
     // Change the global time zone to UTC
@@ -96,7 +76,7 @@ async function documentsByMonth(dbName, collection, year, month) {
             sort: { timestamp: 1 }
         };
 
-        const cursor = database.collection(collection).find(query, options);
+        const cursor = database.collection(collectionName).find(query, options);
 
         const documents = [];
 
