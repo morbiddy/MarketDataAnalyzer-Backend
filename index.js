@@ -9,7 +9,14 @@ const http = require('http');
 const fs = require('fs').promises;
 const { body, query, validationResult } = require('express-validator');
 
-const db = require('./db/index');
+const { getUserPreferences,
+    setUserPreferences,
+    chartData,
+    documents,
+    documentsByMonth,
+    collectionsInfo,
+    countDocumentsInAllCollections,
+    listDatabases } = require('./db/index');
 
 const app = express();
 
@@ -90,7 +97,7 @@ app.get('/availableMarkets', catchAsync(async (req, res) => {
  * Retrieves a list of available databases from the db module.
  */
 app.get('/availableDatabases', catchAsync(async (req, res) => {
-    const databases = await db.query.listDatabases();
+    const databases = await listDatabases();
     res.json(databases);
 }));
 
@@ -106,7 +113,7 @@ app.get('/preferences', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const user = req.query.user;
-    const prefs = await db.query.getUserPreferences(user);
+    const prefs = await getUserPreferences(user);
     res.json(prefs);
 }));
 
@@ -122,7 +129,7 @@ app.post('/preferences', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const preferences = req.body.preferences;
-    const response = await db.query.setUserPreferences(preferences);
+    const response = await setUserPreferences(preferences);
     res.json(response);
 }));
 
@@ -138,7 +145,7 @@ app.post('/chart-data', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const user = req.query.user;
-    const documents = await db.query.chartData(user);
+    const documents = await chartData(user);
     res.json(documents);
 }));
 
@@ -155,7 +162,7 @@ app.get('/documents', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { user, collection } = req.query;
-    const documents = await db.query.documents(user, collection);
+    const documents = await documents(user, collection);
     res.json(documents);
 }));
 
@@ -174,7 +181,7 @@ app.get('/documents/by-month', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { collection, year, month } = req.query;
-    const documents = await db.query.documentsByMonth(collection, parseInt(year), parseInt(month));
+    const documents = await documentsByMonth(collection, parseInt(year), parseInt(month));
     res.json(documents);
 }));
 
@@ -183,7 +190,7 @@ app.get('/documents/by-month', [
  * Retrieves counts of documents in all collections.
  */
 app.get('/collections', catchAsync(async (req, res) => {
-    const collectionInfo = await db.query.countDocumentsInAllCollections();
+    const collectionInfo = await countDocumentsInAllCollections();
     res.json(collectionInfo);
 }));
 
@@ -199,7 +206,7 @@ app.get('/collections/info', [
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const dbName = req.query.dbName;
-    const collectionInfo = await db.query.collectionsInfo(dbName);
+    const collectionInfo = await collectionsInfo(dbName);
     res.json(collectionInfo);
 }));
 

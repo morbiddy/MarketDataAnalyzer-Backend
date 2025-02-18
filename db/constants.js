@@ -1,5 +1,5 @@
-"use strict";
+require('dotenv').config();
 
-const URI = 'mongodb://localhost:27017';
-
-module.exports = { URI };
+module.exports = {
+    URI: process.env.MONGO_URI
+};
