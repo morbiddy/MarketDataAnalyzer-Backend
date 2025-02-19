@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("../config/database");
 
 const userPreferencesSchema = new mongoose.Schema({
     user: { type: String, required: true, unique: true },

@@ -1,13 +1,14 @@
-const db = require("../config/database");
-
-const MarketData = require("../models/MarketData");
+const mongoose = require("../config/database");
+const Marketdata = require("../models/Marketdata");
 const { getUserPreferences } = require("./userPreferencesService");
 
 async function chartData(user) {
     try {
+        //console.log(`get chartdata for user ${user}`);
         const prefs = await getUserPreferences(user);
-        return await MarketData.aggregate([
-            { $match: { timestamp: { $gte: prefs.from, $lt: prefs.to } } },
+        console.log(`From ${new Date(prefs.from)}, to ${new Date(prefs.to)}`);
+        return await Marketdata.aggregate([
+            { $match: { timestamp: { $gte: new Date(prefs.from), $lt: new Date(prefs.to) } } },
             { $sort: { timestamp: 1 } },
             {
                 $lookup: {
@@ -34,33 +35,33 @@ async function documents(user, collectionName) {
         const dbName = `${prefs.market}_${prefs.interval}`;
 
         // Use the existing Mongoose connection to switch database context
-        const database = mongoose.connection.useDb(dbName);
+        const database = mongoose.useDb(dbName);
         const collection = database.collection(collectionName);
-        
+
         // Query for documents starting from the given date
         const query = { timestamp: { $gte: prefs.from, $lt: prefs.to } };
         const options = { sort: { timestamp: 1 } };
 
         const data = await collection.find(query, options).toArray();
-        
+
         console.log(`Returned ${data.length} documents from ${collectionName}`);
         return data;
 
     } catch (error) {
         console.error("Error in documents:", error);
         throw error;
+    } finally {
+        // Revert to the system's default time zone
+        delete process.env.TZ;
     }
 }
 
 async function documentsByMonth(dbName, collectionName, year, month) {
-    const client = new MongoClient(URI);
-
     // Change the global time zone to UTC
     process.env.TZ = 'UTC';
 
     try {
-        await client.connect();
-        const database = client.db(dbName);
+        const database = mongoose.useDb(dbName);
 
         // Start of month in UTC  => month index 0-11
         const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0);
@@ -90,7 +91,6 @@ async function documentsByMonth(dbName, collectionName, year, month) {
         console.error(error);
         return 0; //res.status(500).send('Error querying the database');
     } finally {
-        await client.close();
         // Revert to the system's default time zone
         delete process.env.TZ;
     }

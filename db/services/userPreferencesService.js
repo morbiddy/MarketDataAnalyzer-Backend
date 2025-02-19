@@ -14,9 +14,9 @@ async function getUserPreferences(user) {
 async function setUserPreferences(prefs) {
     try {
         return await UserPreferences.findOneAndUpdate(
-            { user: prefs.user },
-            { $set: prefs },
-            { new: true, upsert: true }
+            { user: prefs.user },   // Find user by username
+            { $set: prefs },        // Update fields
+            { new: true, upsert: true } // Return updated document, create if not exists
         );
     } catch (error) {
         console.error("Error in setUserPreferences:", error);

@@ -1,12 +1,15 @@
+const mongoose = require("../config/database");
+
 /**
  * Get collection statistics.
  */
 async function collectionsInfo(dbName) {
     try {
-        const collections = await mongoose.connection.db.listCollections().toArray();
+        const database = mongoose.useDb(dbName);
+        const collections = await database.listCollections().toArray();
         const stats = await Promise.all(
             collections.map(async (collection) => {
-                const count = await mongoose.connection.collection(collection.name).countDocuments();
+                const count = await database.collection(collection.name).countDocuments();
                 return { collection: collection.name, count };
             })
         );
@@ -22,10 +25,11 @@ async function collectionsInfo(dbName) {
  */
 async function countDocumentsInAllCollections(dbName) {
     try {
-        const collections = await mongoose.connection.db.listCollections().toArray();
+        const database = mongoose.useDb(dbName);
+        const collections = await database.listCollections().toArray();
         const counts = await Promise.all(
             collections.map(async (collection) => {
-                const count = await mongoose.connection.collection(collection.name).countDocuments();
+                const count = await database.collection(collection.name).countDocuments();
                 return { collection: collection.name, count };
             })
         );
@@ -41,7 +45,8 @@ async function countDocumentsInAllCollections(dbName) {
  */
 async function listDatabases() {
     try {
-        return await mongoose.connection.db.admin().listDatabases();
+        
+        return await mongoose.db.admin().listDatabases();
     } catch (error) {
         console.error("Error in listDatabases:", error);
         throw error;

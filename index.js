@@ -8,6 +8,7 @@ const { WebSocketServer } = require('ws');
 const http = require('http');
 const fs = require('fs').promises;
 const { body, query, validationResult } = require('express-validator');
+require('./db/config/database');
 
 const { getUserPreferences,
     setUserPreferences,
@@ -125,7 +126,7 @@ app.get('/preferences', [
 app.post('/preferences', [
     body('preferences').exists().withMessage('Preferences data is required.')
 ], catchAsync(async (req, res) => {
-    const errors = validationResult(req); µ
+    const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const preferences = req.body.preferences;
@@ -138,7 +139,7 @@ app.post('/preferences', [
  * Retrieves chart data (OHLC + indicators) for a user.
  * Expects query parameter: ?user=<user>
  */
-app.post('/chart-data', [
+app.get('/chart-data', [
     query('user').exists().withMessage('User is required.')
 ], catchAsync(async (req, res) => {
     const errors = validationResult(req);

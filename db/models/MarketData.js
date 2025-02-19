@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("../config/database");
 
 const marketDataSchema = new mongoose.Schema({
     timestamp: Date,
@@ -12,4 +12,4 @@ const marketDataSchema = new mongoose.Schema({
     indicatorData: Object,
 });
 
-module.exports = mongoose.model("MarketData", marketDataSchema);
+module.exports = mongoose.model("Marketdata", marketDataSchema);
